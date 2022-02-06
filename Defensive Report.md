@@ -10,7 +10,7 @@
 ### Network Topology
 
 The following machines were identified on the network:
-- Hypervisor / Host Machine (Not a VM)
+- Hypervisor / Host Machine 
   - **Operating System**: Microsoft Windows
   - **Purpose**: Gateway
   - **IP Address**: 192.168.1.1
@@ -34,36 +34,64 @@ The following machines were identified on the network:
 ### Description of Targets
 
 Two Apache web servers on the network had SSH enabled, causing a potential attack through port 80 and 22. 
-Target Machine 1 with the IP Address 192.168.1.110
-Target Machine 2 with the IP Address of 192.168.1.115
+- Target Machine 1 with the IP Address of 192.168.1.110
+- Target Machine 2 with the IP Address of 192.168.1.115
+
 ### Monitoring the Targets
 
-Traffic to these services should be carefully monitored. To this end, we have implemented the alerts below:
+Performing an nmap scan, we can determine potential points of entry though the 'ssh' and 'http' services:
+(Insert screenshot of evidence)
 
-#### Name of Alert 1
-_TODO: Replace `Alert 1` with the name of the alert._
+Traffic to these services should be carefully monitored. So it is crucial to implemented the alerts to do so:
 
-Alert 1 is implemented as follows:
-  - **Metric**: TODO
-  - **Threshold**: TODO
-  - **Vulnerability Mitigated**: TODO
-  - **Reliability**: TODO: Does this alert generate lots of false positives/false negatives? Rate as low, medium, or high reliability.
+#### Excessive HTTP Erros
 
-#### Name of Alert 2
-Alert 2 is implemented as follows:
-  - **Metric**: TODO
-  - **Threshold**: TODO
-  - **Vulnerability Mitigated**: TODO
-  - **Reliability**: TODO: Does this alert generate lots of false positives/false negatives? Rate as low, medium, or high reliability.
+Metric
+- `WHEN count() GROUPED OVER top 5 'http.response.status_code'`
 
-#### Name of Alert 3
-Alert 3 is implemented as follows:
-  - **Metric**: TODO
-  - **Threshold**: TODO
-  - **Vulnerability Mitigated**: TODO
-  - **Reliability**: TODO: Does this alert generate lots of false positives/false negatives? Rate as low, medium, or high reliability.
+Threshold
+- `IS ABOVE 400`
+ 
+Vulnerability Mitigated
+- `Enumeration/Brute Force`
 
-_TODO Note: Explain at least 3 alerts. Add more if time allows._
+Reliability
+ -This alert is highly reliable because it measures by error codes rated 400 and above, allowing visibility of potential threats on the server.
+ 
+ (Insert status of this alert)
+
+#### HTTP Request Size Monitor
+Metric
+- `WHEN sum() of http.request.bytes OVER all documents`
+
+Threshold
+- `IS ABOVE 3500`
+ 
+Vulnerability Mitigated
+- `Code injection in HTTP requests (XSS and CRLF) or DDOS`
+
+Reliability
+ -This would be medium reliability because alerts can be false positive due to non-malicious or legitimage HTTP requests and traffic within the server.
+ 
+ (Insert status of this alert)
+ 
+ 
+#### CPU Usage Monitor
+Metric
+- `WHEN max() OF system.process.cpu.total.pct OVER all documents`
+
+Threshold
+- `IS ABOVE 0.5`
+ 
+Vulnerability Mitigated
+- `Malicious software and programs taking up resources`
+
+Reliability
+ -This alert is highly reliable due to the malicious programs running that can determine CPU Usage.
+ 
+ (Insert status of this alert)
+
+
 
 ### Suggestions for Going Further (Optional)
 _TODO_: 
